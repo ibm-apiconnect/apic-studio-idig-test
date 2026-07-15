@@ -1,0 +1,120 @@
+---
+kind: MCPServer
+apiVersion: api.ibm.com/v1
+metadata:
+  name: not-working-server-s9t15
+  namespace: testmcp
+  version: '1.0'
+  tags: []
+spec:
+  title: MinimalPet MCP Server
+  protocolVersion: V2025_11_25
+  quota:
+    $ref: testmcp:testmcp-quota-s9t15:1.0
+  policy-sequence:
+    - $ref: testmcp:testmcp-freeflowpolicysequence-s9t15:1.0
+  capabilities:
+    tools:
+      - $ref: testmcp:minimalpet-tool-s9t15:1.0
+
+---
+kind: FreeFlowPolicySequence
+apiVersion: api.ibm.com/v1
+metadata:
+  name: testmcp-freeflowpolicysequence-s9t15
+  namespace: testmcp
+  version: '1.0'
+  tags: []
+  labels:
+    gatewayTypes:
+      - nano
+spec:
+  main:
+    - $ref: testmcp:invoke-s9t15:1.0
+  monitoring:
+    $ref: testmcp:telemetry-s9t15:1.0
+
+---
+kind: MCPTools
+apiVersion: api.ibm.com/v1
+metadata:
+  name: minimalpet-tool-s9t15
+  namespace: testmcp
+  version: '1.0'
+  tags: []
+  description: Filtered OpenAPI 3.0 spec (only pet endpoints)
+spec:
+  tools:
+    - name: getPetById
+      description: Make a GET request to /pet/{petId}
+      inputSchema:
+        type: object
+        properties:
+          petId:
+            description: petId parameter
+            x-parameter-location: path
+            type: integer
+            format: int64
+        required:
+          - petId
+      title: Find pet by ID
+      x-api-binding:
+        operationPath: /pet/{petId}
+        operationMethod: GET
+        api:
+          $path: minimalpet-spec-s9t15.json
+
+---
+kind: Quota
+apiVersion: api.ibm.com/v1
+metadata:
+  name: testmcp-quota-s9t15
+  namespace: testmcp
+  version: '1.0'
+  tags: []
+spec:
+  maxRequest: 1000
+  interval: 1m
+  extensions:
+    dp-nano-gateway:
+      apiVersion: api.ibm.com/v1
+      spec:
+        exceedAction: return429
+
+---
+kind: Telemetry
+apiVersion: api.ibm.com/v1
+metadata:
+  name: telemetry-s9t15
+  namespace: testmcp
+  version: '1.0'
+  tags: []
+  labels:
+    gatewayTypes:
+      - nano
+spec: {}
+
+---
+kind: Invoke
+apiVersion: api.ibm.com/v1
+metadata:
+  name: invoke-s9t15
+  namespace: testmcp
+  version: '1.0'
+  tags: []
+  labels:
+    gatewayTypes:
+      - nano
+spec:
+  endpoint:
+    http:
+      target:
+        tlsClientProfile: tls-client-profile-default:1.0.0
+        url: '''https://petstore.swagger.io/v2'' & $pathAndQuery()'
+        urlType: jsonata
+        persistentConnections: false
+        timeout: 30
+        decompressResponse: false
+        followRedirects: false
+        chunkedUpload: false
+

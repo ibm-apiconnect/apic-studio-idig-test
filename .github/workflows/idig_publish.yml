@@ -1,0 +1,5 @@
+#---------------------------------------------------------------------------
+# This is the start of the github action file, still in progress
+#---------------------------------------------------------------------------
+
+name: Publish API Studio files using IDIG broker
