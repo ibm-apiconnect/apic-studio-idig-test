@@ -1,0 +1,15 @@
+kind: Quota
+apiVersion: api.ibm.com/v1
+metadata:
+  name: sample_test_mcp-quota-gu30i
+  namespace: SAMPLE_TEST_MCP
+  version: "1.0"
+  tags: []
+spec:
+  maxRequest: 1000
+  interval: 1m
+  extensions:
+    dp-nano-gateway:
+      apiVersion: api.ibm.com/v1
+      spec:
+        exceedAction: return429
