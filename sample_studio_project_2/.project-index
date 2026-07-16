@@ -1,0 +1,180 @@
+{
+  "nodes": [
+    {
+      "id": "30fa1ff2-5b0b-46d9-8dc4-77f1023d1a2a:0",
+      "projectId": "afufzIkC",
+      "filePath": "sample_studio_project_2/sample_studio_project_2-freeflowpolicysequence-suvk1.yaml",
+      "docIndex": 0,
+      "assetType": "resource",
+      "lastIndexed": 1784202826716,
+      "schemaVersion": 1,
+      "kind": "FreeFlowPolicySequence",
+      "name": "sample_studio_project_2-freeflowpolicysequence-suvk1",
+      "namespace": "sample_studio_project_2",
+      "version": "1.0",
+      "contentHash": "48d181e27887fa12"
+    },
+    {
+      "id": "4d9b3801-35dc-4527-9101-05e48c98be02:0",
+      "projectId": "afufzIkC",
+      "filePath": "sample_studio_project_2/joeblogs-api-server-suvk1.yaml",
+      "docIndex": 0,
+      "assetType": "resource",
+      "lastIndexed": 1784202831617,
+      "schemaVersion": 1,
+      "kind": "MCPServer",
+      "name": "joeblogs-api-server-suvk1",
+      "namespace": "sample_studio_project_2",
+      "version": "1.0",
+      "contentHash": "ef345fc71bfbb8e2"
+    },
+    {
+      "id": "5c5da89d-793d-4c61-a5f1-e86af9d677f2:0",
+      "projectId": "afufzIkC",
+      "filePath": "sample_studio_project_2/sample_studio_project_2-quota-suvk1.yaml",
+      "docIndex": 0,
+      "assetType": "resource",
+      "lastIndexed": 1784202828270,
+      "schemaVersion": 1,
+      "kind": "Quota",
+      "name": "sample_studio_project_2-quota-suvk1",
+      "namespace": "sample_studio_project_2",
+      "version": "1.0",
+      "contentHash": "0a187251c447b5a3"
+    },
+    {
+      "id": "6d4fad0b-ef5d-46f2-8bc9-3de3c36bdcb7:0",
+      "projectId": "afufzIkC",
+      "filePath": "sample_studio_project_2/joeblogs-api-tool-suvk1.yaml",
+      "docIndex": 0,
+      "assetType": "resource",
+      "lastIndexed": 1784202829909,
+      "schemaVersion": 1,
+      "kind": "MCPTools",
+      "name": "joeblogs-api-tool-suvk1",
+      "namespace": "sample_studio_project_2",
+      "version": "1.0",
+      "contentHash": "2c2aff98e981a60b"
+    },
+    {
+      "id": "90603042-c60f-4710-b822-9f77ae5443a4:0",
+      "projectId": "afufzIkC",
+      "filePath": "sample_studio_project_2/telemetry-suvk1.yaml",
+      "docIndex": 0,
+      "assetType": "resource",
+      "lastIndexed": 1784202825134,
+      "schemaVersion": 1,
+      "kind": "Telemetry",
+      "name": "telemetry-suvk1",
+      "namespace": "sample_studio_project_2",
+      "version": "1.0",
+      "contentHash": "dfe9f5b406f27fea"
+    },
+    {
+      "id": "987a59c6-4fa1-46e3-b9a6-ab44caf7f679:0",
+      "projectId": "afufzIkC",
+      "filePath": "sample_studio_project_2/joeblogs-api-spec.yml",
+      "docIndex": 0,
+      "assetType": "support",
+      "lastIndexed": 1784202818988,
+      "schemaVersion": 1
+    },
+    {
+      "id": "da53df1f-5f6b-4b4b-8252-ad6e99ca0f32:0",
+      "projectId": "afufzIkC",
+      "filePath": "sample_studio_project_2/.project-index",
+      "docIndex": 0,
+      "assetType": "support",
+      "lastIndexed": 1784202038191,
+      "schemaVersion": 1
+    },
+    {
+      "id": "ede360eb-b47d-4957-a235-184cbc42a344:0",
+      "projectId": "afufzIkC",
+      "filePath": "sample_studio_project_2/invoke-suvk1.yaml",
+      "docIndex": 0,
+      "assetType": "resource",
+      "lastIndexed": 1784202823555,
+      "schemaVersion": 1,
+      "kind": "Invoke",
+      "name": "invoke-suvk1",
+      "namespace": "sample_studio_project_2",
+      "version": "1.0",
+      "contentHash": "cfe8a1c9090b9df5"
+    }
+  ],
+  "edges": [
+    {
+      "id": "1b9b3bca-d776-4f8f-b94d-50c5aba2194b",
+      "projectId": "afufzIkC",
+      "sourceNodeId": "4d9b3801-35dc-4527-9101-05e48c98be02:0",
+      "targetNodeId": "5c5da89d-793d-4c61-a5f1-e86af9d677f2:0",
+      "targetRefType": "same-project",
+      "targetRefString": "sample_studio_project_2:sample_studio_project_2-quota-suvk1:1.0",
+      "targetRefKind": "resource",
+      "isValid": true,
+      "createdAt": 1784202831624,
+      "lastValidated": 1784202831624
+    },
+    {
+      "id": "2347e79f-43d3-4e09-aba1-d359370e48b3",
+      "projectId": "afufzIkC",
+      "sourceNodeId": "4d9b3801-35dc-4527-9101-05e48c98be02:0",
+      "targetNodeId": "6d4fad0b-ef5d-46f2-8bc9-3de3c36bdcb7:0",
+      "targetRefType": "same-project",
+      "targetRefString": "sample_studio_project_2:joeblogs-api-tool-suvk1:1.0",
+      "targetRefKind": "resource",
+      "isValid": true,
+      "createdAt": 1784202831624,
+      "lastValidated": 1784202831624
+    },
+    {
+      "id": "616c46b8-d266-42ad-a584-488d35fd6f2b",
+      "projectId": "afufzIkC",
+      "sourceNodeId": "30fa1ff2-5b0b-46d9-8dc4-77f1023d1a2a:0",
+      "targetNodeId": "ede360eb-b47d-4957-a235-184cbc42a344:0",
+      "targetRefType": "same-project",
+      "targetRefString": "sample_studio_project_2:invoke-suvk1:1.0",
+      "targetRefKind": "resource",
+      "isValid": true,
+      "createdAt": 1784202826721,
+      "lastValidated": 1784202826721
+    },
+    {
+      "id": "8013bfe9-fc3f-4bdc-8e66-07314fe58c8b",
+      "projectId": "afufzIkC",
+      "sourceNodeId": "30fa1ff2-5b0b-46d9-8dc4-77f1023d1a2a:0",
+      "targetNodeId": "90603042-c60f-4710-b822-9f77ae5443a4:0",
+      "targetRefType": "same-project",
+      "targetRefString": "sample_studio_project_2:telemetry-suvk1:1.0",
+      "targetRefKind": "resource",
+      "isValid": true,
+      "createdAt": 1784202826721,
+      "lastValidated": 1784202826721
+    },
+    {
+      "id": "91e61799-2bf9-4480-8fa6-dd754b1707eb",
+      "projectId": "afufzIkC",
+      "sourceNodeId": "6d4fad0b-ef5d-46f2-8bc9-3de3c36bdcb7:0",
+      "targetNodeId": "987a59c6-4fa1-46e3-b9a6-ab44caf7f679:0",
+      "targetRefType": "same-project",
+      "targetRefString": "./joeblogs-api-spec.yml",
+      "targetRefKind": "support",
+      "isValid": true,
+      "createdAt": 1784202829916,
+      "lastValidated": 1784202829916
+    },
+    {
+      "id": "a7473ee4-9cb4-48c5-b8da-e9935e238436",
+      "projectId": "afufzIkC",
+      "sourceNodeId": "4d9b3801-35dc-4527-9101-05e48c98be02:0",
+      "targetNodeId": "30fa1ff2-5b0b-46d9-8dc4-77f1023d1a2a:0",
+      "targetRefType": "same-project",
+      "targetRefString": "sample_studio_project_2:sample_studio_project_2-freeflowpolicysequence-suvk1:1.0",
+      "targetRefKind": "resource",
+      "isValid": true,
+      "createdAt": 1784202831624,
+      "lastValidated": 1784202831624
+    }
+  ]
+}

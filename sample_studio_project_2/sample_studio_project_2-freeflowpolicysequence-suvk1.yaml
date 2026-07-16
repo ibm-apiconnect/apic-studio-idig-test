@@ -1,0 +1,15 @@
+kind: FreeFlowPolicySequence
+apiVersion: api.ibm.com/v1
+metadata:
+  name: sample_studio_project_2-freeflowpolicysequence-suvk1
+  namespace: sample_studio_project_2
+  version: "1.0"
+  tags: []
+  labels:
+    gatewayTypes:
+      - nano
+spec:
+  main:
+    - $ref: sample_studio_project_2:invoke-suvk1:1.0
+  monitoring:
+    $ref: sample_studio_project_2:telemetry-suvk1:1.0

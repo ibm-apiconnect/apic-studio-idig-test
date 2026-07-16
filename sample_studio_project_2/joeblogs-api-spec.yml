@@ -1,0 +1,1200 @@
+openapi: 3.0.0
+info:
+  title: JoeBlogs API
+  version: 1.0.0
+  description: REST API for testing and prototyping.
+  contact:
+    name: JSONPlaceholder
+    url: https://jsonplaceholder.typicode.com
+servers:
+  - url: https://jsonplaceholder.typicode.com
+    description: Production server
+paths:
+  /posts:
+    get:
+      summary: Get all posts
+      description: Returns a list of all posts
+      tags:
+        - Posts
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: integer
+          description: Filter posts by user ID
+        - in: query
+          name: _limit
+          schema:
+            type: integer
+          description: Limit the number of results
+        - in: query
+          name: _page
+          schema:
+            type: integer
+          description: Page number for pagination
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+    post:
+      summary: Create a new post
+      description: Creates a new post (fake - not persisted)
+      tags:
+        - Posts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostInput"
+      responses:
+        "201":
+          description: Post created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+  /posts/{id}:
+    get:
+      summary: Get a post by ID
+      description: Returns a single post
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "404":
+          description: Post not found
+    put:
+      summary: Update a post
+      description: Updates a post (fake - not persisted)
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostInput"
+      responses:
+        "200":
+          description: Post updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+    patch:
+      summary: Partially update a post
+      description: Partially updates a post (fake - not persisted)
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                body:
+                  type: string
+                userId:
+                  type: integer
+      responses:
+        "200":
+          description: Post updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+    delete:
+      summary: Delete a post
+      description: Deletes a post (fake - not persisted)
+      tags:
+        - Posts
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      responses:
+        "200":
+          description: Post deleted
+  /posts/{id}/comments:
+    get:
+      summary: Get comments for a post
+      description: Returns all comments for a specific post
+      tags:
+        - Posts
+        - Comments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Post ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+  /comments:
+    get:
+      summary: Get all comments
+      description: Returns a list of all comments
+      tags:
+        - Comments
+      parameters:
+        - in: query
+          name: postId
+          schema:
+            type: integer
+          description: Filter comments by post ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Comment"
+    post:
+      summary: Create a new comment
+      description: Creates a new comment (fake - not persisted)
+      tags:
+        - Comments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentInput"
+      responses:
+        "201":
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+  /comments/{id}:
+    get:
+      summary: Get a comment by ID
+      description: Returns a single comment
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Comment ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+        "404":
+          description: Comment not found
+    put:
+      summary: Update a comment
+      description: Updates a comment (fake - not persisted)
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Comment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CommentInput"
+      responses:
+        "200":
+          description: Comment updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+    patch:
+      summary: Partially update a comment
+      description: Partially updates a comment (fake - not persisted)
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Comment ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                body:
+                  type: string
+      responses:
+        "200":
+          description: Comment updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Comment"
+    delete:
+      summary: Delete a comment
+      description: Deletes a comment (fake - not persisted)
+      tags:
+        - Comments
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Comment ID
+      responses:
+        "200":
+          description: Comment deleted
+  /albums:
+    get:
+      summary: Get all albums
+      description: Returns a list of all albums
+      tags:
+        - Albums
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: integer
+          description: Filter albums by user ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Album"
+    post:
+      summary: Create a new album
+      description: Creates a new album (fake - not persisted)
+      tags:
+        - Albums
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlbumInput"
+      responses:
+        "201":
+          description: Album created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Album"
+  /albums/{id}:
+    get:
+      summary: Get an album by ID
+      description: Returns a single album
+      tags:
+        - Albums
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Album ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Album"
+        "404":
+          description: Album not found
+    put:
+      summary: Update an album
+      description: Updates an album (fake - not persisted)
+      tags:
+        - Albums
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Album ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AlbumInput"
+      responses:
+        "200":
+          description: Album updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Album"
+    patch:
+      summary: Partially update an album
+      description: Partially updates an album (fake - not persisted)
+      tags:
+        - Albums
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Album ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                userId:
+                  type: integer
+      responses:
+        "200":
+          description: Album updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Album"
+    delete:
+      summary: Delete an album
+      description: Deletes an album (fake - not persisted)
+      tags:
+        - Albums
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Album ID
+      responses:
+        "200":
+          description: Album deleted
+  /albums/{id}/photos:
+    get:
+      summary: Get photos for an album
+      description: Returns all photos for a specific album
+      tags:
+        - Albums
+        - Photos
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Album ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Photo"
+  /photos:
+    get:
+      summary: Get all photos
+      description: Returns a list of all photos
+      tags:
+        - Photos
+      parameters:
+        - in: query
+          name: albumId
+          schema:
+            type: integer
+          description: Filter photos by album ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Photo"
+    post:
+      summary: Create a new photo
+      description: Creates a new photo (fake - not persisted)
+      tags:
+        - Photos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PhotoInput"
+      responses:
+        "201":
+          description: Photo created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photo"
+  /photos/{id}:
+    get:
+      summary: Get a photo by ID
+      description: Returns a single photo
+      tags:
+        - Photos
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Photo ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photo"
+        "404":
+          description: Photo not found
+    put:
+      summary: Update a photo
+      description: Updates a photo (fake - not persisted)
+      tags:
+        - Photos
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Photo ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PhotoInput"
+      responses:
+        "200":
+          description: Photo updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photo"
+    patch:
+      summary: Partially update a photo
+      description: Partially updates a photo (fake - not persisted)
+      tags:
+        - Photos
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Photo ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                url:
+                  type: string
+                thumbnailUrl:
+                  type: string
+      responses:
+        "200":
+          description: Photo updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Photo"
+    delete:
+      summary: Delete a photo
+      description: Deletes a photo (fake - not persisted)
+      tags:
+        - Photos
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Photo ID
+      responses:
+        "200":
+          description: Photo deleted
+  /todos:
+    get:
+      summary: Get all todos
+      description: Returns a list of all todos
+      tags:
+        - Todos
+      parameters:
+        - in: query
+          name: userId
+          schema:
+            type: integer
+          description: Filter todos by user ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Todo"
+    post:
+      summary: Create a new todo
+      description: Creates a new todo (fake - not persisted)
+      tags:
+        - Todos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoInput"
+      responses:
+        "201":
+          description: Todo created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+  /todos/{id}:
+    get:
+      summary: Get a todo by ID
+      description: Returns a single todo
+      tags:
+        - Todos
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Todo ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+        "404":
+          description: Todo not found
+    put:
+      summary: Update a todo
+      description: Updates a todo (fake - not persisted)
+      tags:
+        - Todos
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Todo ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TodoInput"
+      responses:
+        "200":
+          description: Todo updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+    patch:
+      summary: Partially update a todo
+      description: Partially updates a todo (fake - not persisted)
+      tags:
+        - Todos
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Todo ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                completed:
+                  type: boolean
+                userId:
+                  type: integer
+      responses:
+        "200":
+          description: Todo updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Todo"
+    delete:
+      summary: Delete a todo
+      description: Deletes a todo (fake - not persisted)
+      tags:
+        - Todos
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: Todo ID
+      responses:
+        "200":
+          description: Todo deleted
+  /users:
+    get:
+      summary: Get all users
+      description: Returns a list of all users
+      tags:
+        - Users
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+    post:
+      summary: Create a new user
+      description: Creates a new user (fake - not persisted)
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+      responses:
+        "201":
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+  /users/{id}:
+    get:
+      summary: Get a user by ID
+      description: Returns a single user
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "404":
+          description: User not found
+    put:
+      summary: Update a user
+      description: Updates a user (fake - not persisted)
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserInput"
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    patch:
+      summary: Partially update a user
+      description: Partially updates a user (fake - not persisted)
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: User ID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                username:
+                  type: string
+                email:
+                  type: string
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+    delete:
+      summary: Delete a user
+      description: Deletes a user (fake - not persisted)
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: User ID
+      responses:
+        "200":
+          description: User deleted
+  /users/{id}/posts:
+    get:
+      summary: Get posts for a user
+      description: Returns all posts for a specific user
+      tags:
+        - Users
+        - Posts
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: User ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+  /users/{id}/albums:
+    get:
+      summary: Get albums for a user
+      description: Returns all albums for a specific user
+      tags:
+        - Users
+        - Albums
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: User ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Album"
+  /users/{id}/todos:
+    get:
+      summary: Get todos for a user
+      description: Returns all todos for a specific user
+      tags:
+        - Users
+        - Todos
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: User ID
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Todo"
+components:
+  schemas:
+    Post:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Post ID
+        userId:
+          type: integer
+          description: User ID who created the post
+        title:
+          type: string
+          description: Post title
+        body:
+          type: string
+          description: Post content
+    PostInput:
+      type: object
+      required:
+        - title
+        - body
+        - userId
+      properties:
+        userId:
+          type: integer
+          description: User ID who created the post
+        title:
+          type: string
+          description: Post title
+        body:
+          type: string
+          description: Post content
+    Comment:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Comment ID
+        postId:
+          type: integer
+          description: Post ID this comment belongs to
+        name:
+          type: string
+          description: Comment title
+        email:
+          type: string
+          format: email
+          description: Commenter's email
+        body:
+          type: string
+          description: Comment content
+    CommentInput:
+      type: object
+      required:
+        - postId
+        - name
+        - email
+        - body
+      properties:
+        postId:
+          type: integer
+          description: Post ID this comment belongs to
+        name:
+          type: string
+          description: Comment title
+        email:
+          type: string
+          format: email
+          description: Commenter's email
+        body:
+          type: string
+          description: Comment content
+    Album:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Album ID
+        userId:
+          type: integer
+          description: User ID who owns the album
+        title:
+          type: string
+          description: Album title
+    AlbumInput:
+      type: object
+      required:
+        - userId
+        - title
+      properties:
+        userId:
+          type: integer
+          description: User ID who owns the album
+        title:
+          type: string
+          description: Album title
+    Photo:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Photo ID
+        albumId:
+          type: integer
+          description: Album ID this photo belongs to
+        title:
+          type: string
+          description: Photo title
+        url:
+          type: string
+          format: uri
+          description: Photo URL
+        thumbnailUrl:
+          type: string
+          format: uri
+          description: Photo thumbnail URL
+    PhotoInput:
+      type: object
+      required:
+        - albumId
+        - title
+        - url
+        - thumbnailUrl
+      properties:
+        albumId:
+          type: integer
+          description: Album ID this photo belongs to
+        title:
+          type: string
+          description: Photo title
+        url:
+          type: string
+          format: uri
+          description: Photo URL
+        thumbnailUrl:
+          type: string
+          format: uri
+          description: Photo thumbnail URL
+    Todo:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: Todo ID
+        userId:
+          type: integer
+          description: User ID who owns the todo
+        title:
+          type: string
+          description: Todo title
+        completed:
+          type: boolean
+          description: Todo completion status
+    TodoInput:
+      type: object
+      required:
+        - userId
+        - title
+        - completed
+      properties:
+        userId:
+          type: integer
+          description: User ID who owns the todo
+        title:
+          type: string
+          description: Todo title
+        completed:
+          type: boolean
+          description: Todo completion status
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: User ID
+        name:
+          type: string
+          description: User's full name
+        username:
+          type: string
+          description: Username
+        email:
+          type: string
+          format: email
+          description: User's email
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            suite:
+              type: string
+            city:
+              type: string
+            zipcode:
+              type: string
+            geo:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lng:
+                  type: string
+        phone:
+          type: string
+          description: User's phone number
+        website:
+          type: string
+          description: User's website
+        company:
+          type: object
+          properties:
+            name:
+              type: string
+            catchPhrase:
+              type: string
+            bs:
+              type: string
+    UserInput:
+      type: object
+      required:
+        - name
+        - username
+        - email
+      properties:
+        name:
+          type: string
+          description: User's full name
+        username:
+          type: string
+          description: Username
+        email:
+          type: string
+          format: email
+          description: User's email
+        address:
+          type: object
+          properties:
+            street:
+              type: string
+            suite:
+              type: string
+            city:
+              type: string
+            zipcode:
+              type: string
+            geo:
+              type: object
+              properties:
+                lat:
+                  type: string
+                lng:
+                  type: string
+        phone:
+          type: string
+          description: User's phone number
+        website:
+          type: string
+          description: User's website
+        company:
+          type: object
+          properties:
+            name:
+              type: string
+            catchPhrase:
+              type: string
+            bs:
+              type: string
+tags:
+  - name: Posts
+    description: Operations related to posts
+  - name: Comments
+    description: Operations related to comments
+  - name: Albums
+    description: Operations related to albums
+  - name: Photos
+    description: Operations related to photos
+  - name: Todos
+    description: Operations related to todos
+  - name: Users
+    description: Operations related to users

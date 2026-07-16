@@ -1,0 +1,19 @@
+kind: MCPServer
+apiVersion: api.ibm.com/v1
+metadata:
+  name: joeblogs-api-server-suvk1
+  namespace: sample_studio_project_2
+  version: "1.0"
+  tags: []
+  labels:
+    origin: mcp-rest
+spec:
+  title: JoeBlogs API MCP Server
+  protocolVersion: V2025_11_25
+  quota:
+    $ref: sample_studio_project_2:sample_studio_project_2-quota-suvk1:1.0
+  policy-sequence:
+    - $ref: sample_studio_project_2:sample_studio_project_2-freeflowpolicysequence-suvk1:1.0
+  capabilities:
+    tools:
+      - $ref: sample_studio_project_2:joeblogs-api-tool-suvk1:1.0
