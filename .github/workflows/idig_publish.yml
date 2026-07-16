@@ -1,5 +1,124 @@
 #---------------------------------------------------------------------------
-# This is the start of the github action file, still in progress
+# GitHub Actions workflow — zip and publish API Studio project folders
+# to the IDIG broker whenever changes are pushed to main or master.
+#
+# Requirements
+#   • IDIG_BROKER_URL  – environment variable, e.g.
+#       https://idig.fyre-ci-298236-master.fyre.ibm.com
+#
+# Behaviour
+#   • On every push to main / master the workflow inspects the changed files.
+#   • Any project folder that contains at least one changed file is zipped and
+#     (re-)published to the broker.
+#   • If the push contains no project folder changes (e.g. only README), the
+#     publish step is skipped gracefully.
 #---------------------------------------------------------------------------
 
 name: Publish API Studio files using IDIG broker
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  publish:
+    name: Zip and publish changed project folders
+    runs-on: ubuntu-latest
+
+    env:
+      IDIG_BROKER_URL: https://idig.fyre-ci-298236-master.fyre.ibm.com
+
+    steps:
+      # ── 1. Find difference when compared with the previous commit ──
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2   # need HEAD and HEAD~1 for the diff
+
+      # ── 2. Discover project folders ──────────────────────────────────────────
+      - name: Detect project folders
+        id: projects
+        shell: bash
+        run: |
+          folders=()
+          for d in */; do
+            folder="${d%/}"
+            folders+=("$folder")
+          done
+          # Serialise as a JSON array for use in the next step
+          json=$(printf '%s\n' "${folders[@]}" | jq -R . | jq -sc .)
+          echo "folders=$json" >> "$GITHUB_OUTPUT"
+          echo "Discovered project folders: $json"
+
+      # ── 3. Determine which folders need publishing ───────────────────────────
+      - name: Resolve folders to publish
+        id: changed
+        shell: bash
+        run: |
+          all_folders='${{ steps.projects.outputs.folders }}'
+
+          # Diff HEAD against its parent
+          changed_files=$(git diff --name-only HEAD~1 HEAD)
+          echo "Changed files in this push:"
+          echo "$changed_files"
+
+          publish=()
+          while IFS= read -r folder; do
+            # Check whether any changed file lives inside this folder
+            if echo "$changed_files" | grep -q "^${folder}/"; then
+              publish+=("$folder")
+            fi
+          done < <(echo "$all_folders" | jq -r '.[]')
+
+          if [ ${#publish[@]} -eq 0 ]; then
+            echo "No project folders were affected — nothing to publish."
+            echo "to_publish=[]" >> "$GITHUB_OUTPUT"
+          else
+            json=$(printf '%s\n' "${publish[@]}" | jq -R . | jq -sc .)
+            echo "to_publish=$json" >> "$GITHUB_OUTPUT"
+            echo "Folders to publish: $json"
+          fi
+
+      # ── 4. Zip and publish each folder ───────────────────────────────────────
+      - name: Publish folders to IDIG broker
+        if: steps.changed.outputs.to_publish != '[]'
+        shell: bash
+        run: |
+          to_publish='${{ steps.changed.outputs.to_publish }}'
+
+          while IFS= read -r folder; do
+            echo "──────────────────────────────────────────"
+            echo "Processing folder: $folder"
+
+            zip_file="${folder}.zip"
+
+            # Zip the entire project folder; -r recursive, -q quiet
+            zip -rq "$zip_file" "$folder"
+            echo "Created archive: $zip_file ($(du -sh "$zip_file" | cut -f1))"
+
+            # POST to the IDIG broker
+            http_status=$(curl --silent --output /tmp/idig_response.txt \
+              --write-out "%{http_code}" \
+              --request POST \
+              --header "Accept: application/json" \
+              --header "Content-Type: multipart/form-data" \
+              --form "file=@${zip_file};type=application/zip" \
+              "${IDIG_BROKER_URL}/idig-broker/publish")
+
+            response_body=$(cat /tmp/idig_response.txt)
+            echo "HTTP status : $http_status"
+            echo "Response    : $response_body"
+
+            if [[ "$http_status" -lt 200 || "$http_status" -ge 300 ]]; then
+              echo "ERROR: Publish failed for '$folder' (HTTP $http_status)"
+              exit 1
+            fi
+
+            echo "Successfully published '$folder'."
+            rm -f "$zip_file"
+          done < <(echo "$to_publish" | jq -r '.[]')
+
+          echo "──────────────────────────────────────────"
+          echo "All folders published successfully."
