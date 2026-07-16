@@ -2,7 +2,7 @@ kind: MCPTools
 apiVersion: api.ibm.com/v1
 metadata:
   name: pet-tool-gu30i
-  namespace: SAMPLE_TEST_MCP
+  namespace: sample_studio_project
   version: "1.0"
   tags: []
   description: |-

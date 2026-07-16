@@ -2,7 +2,7 @@ kind: Quota
 apiVersion: api.ibm.com/v1
 metadata:
   name: sample_test_mcp-quota-gu30i
-  namespace: SAMPLE_TEST_MCP
+  namespace: sample_studio_project
   version: "1.0"
   tags: []
 spec:
