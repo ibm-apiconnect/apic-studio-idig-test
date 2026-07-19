@@ -8,7 +8,7 @@ metadata:
   labels:
     origin: mcp-rest
 spec:
-  title: pet MCP Server
+  title: TEST TITLE
   protocolVersion: V2025_11_25
   quota:
     $ref: sample_studio_project:sample_test_mcp-quota-gu30i:1.0
