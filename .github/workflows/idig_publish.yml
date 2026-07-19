@@ -16,8 +16,10 @@ env:
   PLATFORM_API_PREFIX: idig
 
 jobs:
-  publish-projects:
+  discover-projects:
     runs-on: ubuntu-latest
+    outputs:
+      changed_files: ${{ steps.difference.outputs.changed_files }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -25,18 +27,28 @@ jobs:
           fetch-depth: 2   # need HEAD and HEAD~1 for the diff
 
       - name: Show difference compared to previous commit
-        shell: bash
+        id: difference
         run: |
-          echo "Changed files in this push:"
-          git diff --name-only HEAD~1 HEAD
+          files=$(git diff --name-only HEAD~1 HEAD)
+          echo "Changed files in this push: $files"
+          echo "changed_files=$files" >> "$GITHUB_OUTPUT"
 
+  publish-projects:
+    runs-on: ubuntu-latest
+    needs: discover-projects
+    steps:
+      - uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
       - name: Zip and Publish Project folders
+        id: publish
         uses: ibm-apiconnect/apic-studio-idig-action@main
         with:
           idig_host: ${{ env.IDIG_BROKER_HOST }}
           platform_api_prefix: ${{ env.PLATFORM_API_PREFIX }}
+          changed_files: ${{ needs.discover-projects.outputs.changed_files }}
+      - name: Display action result
+        run: |
+          echo "Result of the action: ${{ steps.publish.outputs.action-result }}"
