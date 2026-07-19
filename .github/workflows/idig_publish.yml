@@ -13,7 +13,7 @@ on:
       
 env: 
   IDIG_BROKER_HOST: fyre-ci-298236-master.fyre.ibm.com
-  PLATFORM_API_PREFIX: idig
+  PLATFORM_IDIG_PREFIX: idig
 
 jobs:
   discover-projects:
@@ -47,7 +47,7 @@ jobs:
         uses: ibm-apiconnect/apic-studio-idig-action@main
         with:
           idig_host: ${{ env.IDIG_BROKER_HOST }}
-          platform_api_prefix: ${{ env.PLATFORM_API_PREFIX }}
+          platform_idig_prefix: ${{ env.PLATFORM_IDIG_PREFIX }}
           changed_files: ${{ needs.discover-projects.outputs.changed_files }}
       - name: Display action result
         run: |
