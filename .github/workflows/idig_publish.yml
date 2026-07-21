@@ -13,7 +13,7 @@ on:
       
 env: 
   IDIG_BROKER_HOST: apps.rosa.apic-t-us00.bvw9.p3.openshiftapps.com
-  PLATFORM_IDIG_PREFIX: idig
+  PLATFORM_IDIG_PREFIX: idig-idig-broker-apic
 
 jobs:
   discover-projects:
@@ -49,8 +49,6 @@ jobs:
           idig_host: ${{ env.IDIG_BROKER_HOST }}
           platform_idig_prefix: ${{ env.PLATFORM_IDIG_PREFIX }}
           changed_files: ${{ needs.discover-projects.outputs.changed_files }}
-          idig_client_cert: ${{ secrets.IDIG_CLIENT_CERT }}
-          idig_client_key: ${{ secrets.IDIG_CLIENT_KEY }}
       - name: Display action result
         run: |
           echo "Result of the action: ${{ steps.publish.outputs.action-result }}"
