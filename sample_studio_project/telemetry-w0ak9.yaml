@@ -1,10 +1,11 @@
 kind: Telemetry
 apiVersion: api.ibm.com/v1
 metadata:
-  name: telemetry-gu30i
-  namespace: sample_studio_project
+  name: telemetry-w0ak9
+  namespace: test-project
   version: "1.0"
   tags: []
+  domain: mcp
   labels:
     gatewayTypes:
       - nano
