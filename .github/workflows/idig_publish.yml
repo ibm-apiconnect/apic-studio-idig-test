@@ -49,6 +49,7 @@ jobs:
           idig_host: ${{ env.IDIG_BROKER_HOST }}
           platform_idig_prefix: ${{ env.PLATFORM_IDIG_PREFIX }}
           changed_files: ${{ needs.discover-projects.outputs.changed_files }}
+          insecure_skip_tls_verify: 'true'
       - name: Display action result
         run: |
           echo "Result of the action: ${{ steps.publish.outputs.action-result }}"
