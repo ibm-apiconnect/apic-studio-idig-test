@@ -1,68 +1,79 @@
 #---------------------------------------------------------------------------
-# GitHub Actions workflow — zip and publish API Studio project folders
-# to the IDIG broker whenever changes are pushed to main or master.
-# Deleted project folders are automatically removed from the broker as well.
+# GitHub Actions workflow — publish changed API Studio project folders and
+# delete published MCPServer/LLM assets for deleted project files whenever
+# changes are pushed to main or master.
 #---------------------------------------------------------------------------
 
-name: Publish API Studio files to IDIG
+name: Publish API Studio changes to IDIG
 
 on:
   push:
     branches:
       - main
       - master
-
-env:
+      
+env: 
   IDIG_BROKER_HOST: t-us00.apiconnect.test.automation.ibm.com
   PLATFORM_IDIG_PREFIX: idig-broker
 
 jobs:
-  discover-projects:
+  discover-changes:
+    name: Discover changed files and deleted asset definitions
     runs-on: ubuntu-latest
     outputs:
       changed_files: ${{ steps.difference.outputs.changed_files }}
+      deleted_files_content: ${{ steps.difference.outputs.deleted_files_content }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 2   # need HEAD and HEAD~1 for the diff
 
-      - name: Show difference compared to previous commit
+      - name: Collect changed files and deleted file contents from previous commit
         id: difference
         run: |
           files=$(git diff --name-only HEAD~1 HEAD)
+          deleted_files=$(git diff --diff-filter=D --name-only HEAD~1 HEAD)
+          deleted_files_content='[]'
+
+          if [ -n "$deleted_files" ]; then
+            deleted_files_content=$(while IFS= read -r file; do
+              [ -n "$file" ] || continue
+              content=$(git show "HEAD~1:$file" | base64 | tr -d '\n')
+              printf '{"path":"%s","content":"%s"}\n' "$file" "$content"
+            done <<EOF | jq -R -s 'split("\n") | map(select(length > 0) | fromjson)'
+$deleted_files
+EOF
+)
+          fi
+
           echo "Changed files in this push: $files"
-          # Collapse newlines to spaces so the value survives GITHUB_OUTPUT
-          files_oneline=$(echo "$files" | tr '\n' ' ' | sed 's/[[:space:]]*$//')
-          echo "changed_files=$files_oneline" >> "$GITHUB_OUTPUT"
+          echo "changed_files=$files" >> "$GITHUB_OUTPUT"
+          echo "deleted_files_content<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$deleted_files_content" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
-  sync-projects:
+  publish-changes:
+    name: Publish changed folders and delete removed published assets
     runs-on: ubuntu-latest
-    needs: discover-projects
+    needs: discover-project-changes
     steps:
-      - name: Checkout repository
-        # fetch-depth: 2 is required so that HEAD~1 is available inside the
-        # action when it needs to read deleted files from the previous commit.
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
-
+      - uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-
-      - name: Publish or delete project folders
-        id: sync
+      - name: Publish changed project folders and delete removed published assets
+        id: publish
         uses: ibm-apiconnect/apic-studio-idig-action@main
         with:
           idig_host: ${{ env.IDIG_BROKER_HOST }}
           platform_idig_prefix: ${{ env.PLATFORM_IDIG_PREFIX }}
-          changed_files: ${{ needs.discover-projects.outputs.changed_files }}
+          changed_files: ${{ needs.discover-project-changes.outputs.changed_files }}
+          deleted_files_content: ${{ needs.discover-project-changes.outputs.deleted_files_content }}
           insecure_skip_tls_verify: 'true'
-
-      - name: Display action result
+      - name: Display publish and delete action results
         env:
-          ACTION_RESULT: ${{ steps.sync.outputs.action-result }}
+          ACTION_RESULT: ${{ steps.publish.outputs.action-result }}
         run: |
           echo "Result of the action: $ACTION_RESULT"
