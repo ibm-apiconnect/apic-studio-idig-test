@@ -1,6 +1,7 @@
 #---------------------------------------------------------------------------
 # GitHub Actions workflow — zip and publish API Studio project folders
 # to the IDIG broker whenever changes are pushed to main or master.
+# Deleted project folders are automatically removed from the broker as well.
 #---------------------------------------------------------------------------
 
 name: Publish API Studio files to IDIG
@@ -10,8 +11,8 @@ on:
     branches:
       - main
       - master
-      
-env: 
+
+env:
   IDIG_BROKER_HOST: apps.rosa.apic-t-us00.bvw9.p3.openshiftapps.com
   PLATFORM_IDIG_PREFIX: idig-idig-broker-apic
 
@@ -31,25 +32,35 @@ jobs:
         run: |
           files=$(git diff --name-only HEAD~1 HEAD)
           echo "Changed files in this push: $files"
-          echo "changed_files=$files" >> "$GITHUB_OUTPUT"
+          # Collapse newlines to spaces so the value survives GITHUB_OUTPUT
+          files_oneline=$(echo "$files" | tr '\n' ' ' | sed 's/[[:space:]]*$//')
+          echo "changed_files=$files_oneline" >> "$GITHUB_OUTPUT"
 
-  publish-projects:
+  sync-projects:
     runs-on: ubuntu-latest
     needs: discover-projects
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        # fetch-depth: 2 is required so that HEAD~1 is available inside the
+        # action when it needs to read deleted files from the previous commit.
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
-      - name: Zip and Publish Project folders
-        id: publish
+
+      - name: Publish or delete project folders
+        id: sync
         uses: ibm-apiconnect/apic-studio-idig-action@main
         with:
           idig_host: ${{ env.IDIG_BROKER_HOST }}
           platform_idig_prefix: ${{ env.PLATFORM_IDIG_PREFIX }}
           changed_files: ${{ needs.discover-projects.outputs.changed_files }}
           insecure_skip_tls_verify: 'true'
+
       - name: Display action result
         run: |
-          echo "Result of the action: ${{ steps.publish.outputs.action-result }}"
+          echo "Result of the action: ${{ steps.sync.outputs.action-result }}"
