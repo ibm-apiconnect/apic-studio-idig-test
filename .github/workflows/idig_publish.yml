@@ -46,8 +46,9 @@ jobs:
             )
           fi
 
-          echo "Changed files in this push: $files"
-          echo "changed_files=$files" >> "$GITHUB_OUTPUT"
+          files_oneline=$(echo "$files" | tr '\n' ' ' | sed 's/[[:space:]]*$//')
+          echo "Changed files in this push: $files_oneline"
+          echo "changed_files=$files_oneline" >> "$GITHUB_OUTPUT"
           echo "deleted_files_content<<EOF" >> "$GITHUB_OUTPUT"
           echo "$deleted_files_content" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
