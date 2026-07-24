@@ -13,8 +13,8 @@ on:
       - master
 
 env:
-  IDIG_BROKER_HOST: apps.rosa.apic-t-us00.bvw9.p3.openshiftapps.com
-  PLATFORM_IDIG_PREFIX: idig-idig-broker-apic
+  IDIG_BROKER_HOST: t-us00.bvw9.p3.openshiftapps.com
+  PLATFORM_IDIG_PREFIX: idig-broker
 
 jobs:
   discover-projects:
