@@ -37,14 +37,13 @@ jobs:
           deleted_files_content='[]'
 
           if [ -n "$deleted_files" ]; then
-            deleted_files_content=$(while IFS= read -r file; do
-              [ -n "$file" ] || continue
-              content=$(git show "HEAD~1:$file" | base64 | tr -d '\n')
-              printf '{"path":"%s","content":"%s"}\n' "$file" "$content"
-            done <<EOF | jq -R -s 'split("\n") | map(select(length > 0) | fromjson)'
-$deleted_files
-EOF
-)
+            deleted_files_content=$(
+              echo "$deleted_files" | while IFS= read -r file; do
+                [ -n "$file" ] || continue
+                content=$(git show "HEAD~1:$file" | base64 | tr -d '\n')
+                printf '{"path":"%s","content":"%s"}\n' "$file" "$content"
+              done | jq -R -s 'split("\n") | map(select(length > 0) | fromjson)'
+            )
           fi
 
           echo "Changed files in this push: $files"
@@ -56,7 +55,7 @@ EOF
   publish-changes:
     name: Publish changed folders and delete removed published assets
     runs-on: ubuntu-latest
-    needs: discover-project-changes
+    needs: discover-changes
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
@@ -69,8 +68,8 @@ EOF
         with:
           idig_host: ${{ env.IDIG_BROKER_HOST }}
           platform_idig_prefix: ${{ env.PLATFORM_IDIG_PREFIX }}
-          changed_files: ${{ needs.discover-project-changes.outputs.changed_files }}
-          deleted_files_content: ${{ needs.discover-project-changes.outputs.deleted_files_content }}
+          changed_files: ${{ needs.discover-changes.outputs.changed_files }}
+          deleted_files_content: ${{ needs.discover-changes.outputs.deleted_files_content }}
           insecure_skip_tls_verify: 'true'
       - name: Display publish and delete action results
         env:
