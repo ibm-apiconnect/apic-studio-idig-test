@@ -62,5 +62,7 @@ jobs:
           insecure_skip_tls_verify: 'true'
 
       - name: Display action result
+        env:
+          ACTION_RESULT: ${{ steps.sync.outputs.action-result }}
         run: |
-          echo "Result of the action: ${{ steps.sync.outputs.action-result }}"
+          echo "Result of the action: $ACTION_RESULT"
