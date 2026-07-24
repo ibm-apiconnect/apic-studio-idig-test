@@ -5,7 +5,7 @@ metadata:
   namespace: test-project
   version: "1.0"
   tags: []
-  description: TEST description
+  description: TEST 
   domain: mcp
   labels: {}
 spec:
