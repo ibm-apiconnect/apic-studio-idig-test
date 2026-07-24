@@ -2,7 +2,7 @@ kind: MCPInvoke
 apiVersion: api.ibm.com/v1
 metadata:
   name: mcp-invoke-w0ak9
-  namespace: test-project
+  namespace: TEST THIS PROJECT
   version: "1.0"
   tags: []
   domain: mcp
