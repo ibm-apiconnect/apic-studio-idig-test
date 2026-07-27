@@ -1,0 +1,15 @@
+kind: InvokeOpenAiModelsId
+apiVersion: api.ibm.com/v1
+metadata:
+  name: InvokeOpenAiModelsId-bjpi9
+  namespace: TEST_LLM
+  version: '1.0'
+  tags: []
+  labels:
+    gatewayTypes:
+      - nano
+spec:
+  apiKeySecret: placeholder-api-key
+  tlsClientProfile: tls-client-profile-default:1.0.0
+  model: $(a_model_id)
+  cachePolicy: disabled

@@ -1,0 +1,13 @@
+kind: API
+apiVersion: api.ibm.com/v1
+metadata:
+  name: api-join_chatgpt-bjpi9
+  namespace: TEST_LLM
+  version: '1.0'
+  tags: []
+  domain: ai-platform
+spec:
+  api-spec:
+    $path: ./api-spec-bjpi9.yml
+  policy-sequence:
+    - $ref: TEST_LLM:freeflowpolicysequence-join_chatgpt-bjpi9:1.0

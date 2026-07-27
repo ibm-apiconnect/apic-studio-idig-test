@@ -1,0 +1,24 @@
+kind: FreeFlowPolicySequence
+apiVersion: api.ibm.com/v1
+metadata:
+  name: freeflowpolicysequence-join_chatgpt-bjpi9
+  namespace: TEST_LLM
+  version: '1.0'
+  tags: []
+  domain: ai-platform
+  labels:
+    gatewayTypes:
+      - nano
+spec:
+  main:
+    - $ref: TEST_LLM:ExtractIdentity-bjpi9:1.0
+    - $ref: TEST_LLM:Authenticate-bjpi9:1.0
+    - $ref: TEST_LLM:Authorize-bjpi9:1.0
+    - $ref: TEST_LLM:If-bjpi9:1.0
+    - $ref: TEST_LLM:OperationSwitch-bjpi9:1.0
+  monitoring:
+    $ref: TEST_LLM:Telemetry-bjpi9:1.0
+  error:
+    - errorType: []
+      execute:
+        - $ref: TEST_LLM:Throw-bjpi9:1.0

@@ -1,0 +1,32 @@
+kind: LLMProvider
+apiVersion: api.ibm.com/v1
+metadata:
+  name: join_chatgpt
+  namespace: TEST_LLM
+  version: '1.0'
+  tags: []
+  labels:
+    gatewayTypes:
+      - nano
+  domain: ai-platform
+spec:
+  provider:
+    type: openai
+    operations:
+      - InvokeOpenAiModels
+      - InvokeOpenAiModelsId
+      - InvokeOpenAiChatCompletions
+      - InvokeOpenAiEmbeddings
+    apiKeySecret: api-key-llm
+    tlsClientProfile: tls-client-profile-default:1.0.0
+    inputMessage: request
+    cachePolicy:
+      cache:
+        expire:
+          static:
+            seconds: 60
+        scope:
+          narrowScope: {}
+        ignoreControlDirectives: true
+  product:
+    $ref: TEST_LLM:product-join_chatgpt-bjpi9:1.0
