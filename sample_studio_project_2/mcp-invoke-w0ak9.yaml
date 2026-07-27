@@ -1,0 +1,26 @@
+kind: MCPInvoke
+apiVersion: api.ibm.com/v1
+metadata:
+  name: mcp-invoke-w0ak9
+  namespace: TEST THIS PROJECT FILE
+  version: "1.0"
+  tags: []
+  domain: mcp
+  labels:
+    gatewayTypes:
+      - nano
+spec:
+  input: request
+  endpoint:
+    httpSse:
+      serverUrl:
+        plain:
+          value: https://mcp.deepwiki.com/mcp
+      timeout: 30
+      tlsClientProfile: tls-client-profile-default:1.0.0
+    primitive:
+      tool:
+        name:
+          plain:
+            value: tool_name
+        output: response
