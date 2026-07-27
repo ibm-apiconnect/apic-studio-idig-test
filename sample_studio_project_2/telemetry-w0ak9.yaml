@@ -1,7 +1,7 @@
 kind: Telemetry
 apiVersion: api.ibm.com/v1
 metadata:
-  name: telemetry-w0ak9
+  name: telemetry-project-2
   namespace: test-project
   version: "1.0"
   tags: []

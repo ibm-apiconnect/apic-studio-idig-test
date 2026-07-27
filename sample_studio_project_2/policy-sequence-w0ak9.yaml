@@ -1,7 +1,7 @@
 kind: FreeFlowPolicySequence
 apiVersion: api.ibm.com/v1
 metadata:
-  name: policy-sequence-w0ak9
+  name: policy-sequence-project-2
   namespace: test-project
   version: "1.0"
   tags: []
@@ -11,6 +11,6 @@ metadata:
       - nano
 spec:
   main:
-    - $ref: test-project:mcp-invoke-w0ak9:1.0
+    - $ref: test-project:mcp-invoke-project-2:1.0
   monitoring:
-    $ref: test-project:telemetry-w0ak9:1.0
+    $ref: test-project:telemetry-project-2:1.0
