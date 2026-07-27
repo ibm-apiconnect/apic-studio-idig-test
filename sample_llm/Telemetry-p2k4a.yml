@@ -1,0 +1,24 @@
+kind: Telemetry
+apiVersion: api.ibm.com/v1
+metadata:
+  name: Telemetry-p2k4a
+  namespace: DPNano_Product_LLM_Provider
+  version: '1.0'
+  tags: []
+  domain: ai-platform
+  labels:
+    gatewayTypes:
+      - nano
+spec:
+  verbosity:
+    - level: basic
+      onSuccessTrimTo: normal
+      inboundLevel: basic
+      outboundLevel: basic
+      operations:
+        - path: /deployment-models
+          method: GET
+        - path: /text-generate
+          method: POST
+        - path: /tokenize
+          method: POST

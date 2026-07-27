@@ -1,0 +1,14 @@
+kind: Product
+apiVersion: api.ibm.com/v1
+metadata:
+  name: product-watsonx-conn-sample-p2k4a
+  namespace: DPNano_Product_LLM_Provider
+  version: '1.0'
+  tags: []
+  domain: ai-platform
+  description: ''
+spec:
+  apis:
+    - $ref: DPNano_Product_LLM_Provider:api-watsonx-conn-sample-p2k4a:1.0
+  plans:
+    - $ref: DPNano_Product_LLM_Provider:plan-watsonx-conn-sample-p2k4a:1.0

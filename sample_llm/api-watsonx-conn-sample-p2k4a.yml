@@ -1,0 +1,14 @@
+kind: API
+apiVersion: api.ibm.com/v1
+metadata:
+  name: api-watsonx-conn-sample-p2k4a
+  namespace: DPNano_Product_LLM_Provider
+  version: '1.0'
+  tags: []
+  domain: ai-platform
+spec:
+  api-spec:
+    $path: ./api-spec-p2k4a.yml
+  policy-sequence:
+    - $ref: >-
+        DPNano_Product_LLM_Provider:freeflowpolicysequence-watsonx-conn-sample-p2k4a:1.0

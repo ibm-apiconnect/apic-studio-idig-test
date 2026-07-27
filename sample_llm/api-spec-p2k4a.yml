@@ -1,0 +1,392 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: watsonx-conn-sample
+  x-ibm-name: watsonx-conn-sample
+servers:
+  - url: /dev
+paths:
+  /deployment-models:
+    get:
+      summary: List available foundation model specs
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - limit
+                  - first
+                  - resources
+                properties:
+                  limit:
+                    type: integer
+                  total_count:
+                    type: integer
+                  resources:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        model_id:
+                          type: string
+                        provider:
+                          type: string
+                        short_description:
+                          type: string
+        '400':
+          description: Bad request, the response body should contain the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+        '403':
+          description: Forbidden, authentication/authorization error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+        '404':
+          description: The specified resource was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+  /text-generate:
+    post:
+      summary: Generate text from a prompt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - model_id
+                - input
+              properties:
+                model_id:
+                  type: string
+                  description: The id of the model to be used for this request.
+                  example: ibm/granite-4-h-small
+                input:
+                  type: string
+                  description: Prompt text. Recommended not to leave trailing spaces.
+                parameters:
+                  type: object
+                  properties:
+                    decoding_method:
+                      type: string
+                      description: Token selection strategy.
+                      enum:
+                        - sample
+                        - greedy
+                      default: sample
+                    max_new_tokens:
+                      type: integer
+                      minimum: 0
+                      default: 20
+                    min_new_tokens:
+                      type: integer
+                      minimum: 0
+                      default: 0
+                    random_seed:
+                      type: integer
+                      minimum: 1
+                    stop_sequences:
+                      type: array
+                      description: Up to 6 unique stop sequences.
+                      maxItems: 6
+                      uniqueItems: true
+                      items:
+                        type: string
+                    temperature:
+                      type: number
+                      minimum: 0.05
+                      maximum: 2
+                      default: 1
+                    time_limit:
+                      type: integer
+                      description: Time limit in milliseconds.
+                      minimum: 1
+                    top_k:
+                      type: integer
+                      minimum: 1
+                      maximum: 100
+                    top_p:
+                      type: number
+                    repetition_penalty:
+                      type: number
+                    truncate_input_tokens:
+                      type: integer
+                    return_options:
+                      type: object
+                      properties:
+                        include_stop_sequence:
+                          type: boolean
+                          default: true
+                          description: >-
+                            If false, omit matched stop sequence from output
+                            end.
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - model_id
+                  - created_at
+                  - results
+                properties:
+                  model_id:
+                    type: string
+                    description: Model used for inference.
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: Response creation time in ISO 8601 format.
+                  results:
+                    type: array
+                    minItems: 1
+                    items:
+                      type: object
+                      required:
+                        - generated_text
+                        - stop_reason
+                      properties:
+                        generated_text:
+                          type: string
+                        stop_reason:
+                          type: string
+                          description: Reason the call stopped.
+                          enum:
+                            - not_finished
+                            - max_tokens
+                            - eos_token
+                            - cancelled
+                            - time_limit
+                            - stop_sequence
+                            - token_limit
+                            - error
+                        generated_token_count:
+                          type: integer
+                        input_token_count:
+                          type: integer
+                        seed:
+                          type: integer
+        '400':
+          description: Bad request, the response body should contain the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+        '403':
+          description: Forbidden, authentication/authorization error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+        '404':
+          description: The specified resource was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+  /tokenize:
+    post:
+      summary: Tokenize text for a given model
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - model_id
+                - input
+              properties:
+                model_id:
+                  type: string
+                  description: The id of the model to be used for this request.
+                  example: ibm/granite-4-h-small
+                input:
+                  type: string
+                  description: The input string to tokenize.
+                  example: 'Write a tagline for an alumni association: Together we'
+                parameters:
+                  type: object
+                  properties:
+                    return_tokens:
+                      type: boolean
+                      default: false
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - model_id
+                  - result
+                properties:
+                  model_id:
+                    type: string
+                  result:
+                    type: object
+                    properties:
+                      token_count:
+                        type: integer
+                        description: The number of tokens in the input string.
+                        example: 11
+                      tokens:
+                        type: array
+                        description: >-
+                          The input string broken up into tokens (present if
+                          requested).
+                        items:
+                          type: string
+        '400':
+          description: Bad request, the response body should contain the reason.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+        '401':
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+        '403':
+          description: Forbidden, authentication/authorization error.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+        '404':
+          description: The specified resource was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  message:
+                    type: string
+                  details:
+                    type: object
+                    additionalProperties: true
+components:
+  securitySchemes:
+    clientID:
+      type: apiKey
+      in: header
+      name: X-IBM-Client-Id
+security:
+  - clientID: []

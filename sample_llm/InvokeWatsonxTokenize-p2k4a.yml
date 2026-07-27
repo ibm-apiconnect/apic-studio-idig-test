@@ -1,0 +1,19 @@
+kind: InvokeWatsonxTokenize
+apiVersion: api.ibm.com/v1
+metadata:
+  name: InvokeWatsonxTokenize-p2k4a
+  namespace: DPNano_Product_LLM_Provider
+  version: '1.0'
+  tags: []
+  domain: ai-platform
+  labels:
+    gatewayTypes:
+      - nano
+spec:
+  region: us-south
+  opVersion: placeholder-op-version
+  tlsClientProfile: tls-client-profile-default:1.0.0
+  projectId: placeholder-project-id
+  inputMessage: request
+  outputMessage: response
+  cachePolicy: disabled

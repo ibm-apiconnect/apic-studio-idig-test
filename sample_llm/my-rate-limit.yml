@@ -1,0 +1,21 @@
+kind: RateLimit
+apiVersion: api.ibm.com/v1
+metadata:
+  name: my-rate-limit
+  namespace: DPNano_Product_LLM_Provider
+  version: '1.0'
+  tags: []
+  labels:
+    gatewayTypes:
+      - nano
+spec:
+  extensions:
+    dp-nano-gateway:
+      spec:
+        limits:
+          - aliasLimit:
+              name: watsonx-token-weighted
+              operation: consume
+          - aliasLimit:
+              name: watsonx-default
+              operation: consume

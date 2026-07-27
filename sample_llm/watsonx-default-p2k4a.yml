@@ -1,0 +1,20 @@
+kind: Quota
+apiVersion: api.ibm.com/v1
+metadata:
+  name: watsonx-default-p2k4a
+  namespace: DPNano_Product_LLM_Provider
+  version: '1.0'
+  tags: []
+  domain: ai-platform
+  description: ''
+spec:
+  maxRequest: 1000
+  interval: 1s
+  extensions:
+    dp-nano-gateway:
+      apiVersion: api.ibm.com/v1
+      spec:
+        weightExpr: '1'
+        exceedAction: continue
+        intervalOffset: 0
+        dynamicValue: ''
