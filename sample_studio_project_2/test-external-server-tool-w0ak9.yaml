@@ -10,8 +10,8 @@ metadata:
   labels: {}
 spec:
   tools:
-    - name: read_wiki_structure_project_2
-      title: read_wiki_structure_project_2
+    - name: wiki_2_struct
+      title: wiki_structure_project_2
       description: >-
         Get a list of documentation topics for a GitHub repository.
 
@@ -25,8 +25,8 @@ spec:
         required:
           - repoName
         type: object
-    - name: read_wiki_contents_project_2
-      title: read_wiki_contents_project_2
+    - name: wiki_2_contents
+      title: wiki_contents_project_2
       description: >-
         View documentation about a GitHub repository.
 
