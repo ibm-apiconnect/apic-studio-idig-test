@@ -58,6 +58,7 @@ jobs:
     name: Publish changed folders and delete removed published assets
     runs-on: self-hosted
     needs: discover-changes
+    environment: dc
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
