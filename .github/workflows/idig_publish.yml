@@ -69,13 +69,13 @@ jobs:
       - name: Fetch JWT via federated login
         id: auth
         run: |
-          curl -k -s -o /dev/null \
-            -D /tmp/idig-login-headers.txt \
+          TOKEN=$(curl -k -s -o /dev/null -D - \
             https://${{ env.PLATFORM_IDIG_PREFIX }}.${{ env.IDIG_BROKER_HOST }}/api/v1/federated-login \
             -H 'Content-Type: application/json' \
-            -d "{\"username\":\"${{ secrets.IDIG_USERNAME }}\",\"password\":\"${{ secrets.IDIG_PASSWORD }}\"}"
-          TOKEN=$(grep -i 'set-cookie:.*accesstoken=' /tmp/idig-login-headers.txt | \
-            sed 's/.*accesstoken=\(eyJ[^;]*\).*/\1/' | tr -d '\r')
+            -d "{\"username\":\"${{ secrets.IDIG_USERNAME }}\",\"password\":\"${{ secrets.IDIG_PASSWORD }}\"}" \
+            | grep -i 'set-cookie:.*accesstoken=' \
+            | sed 's/.*accesstoken=\(eyJ[^;]*\).*/\1/' \
+            | tr -d '\r')
           if [ -z "$TOKEN" ]; then
             echo "ERROR: Failed to obtain access token from federated login"
             exit 1
