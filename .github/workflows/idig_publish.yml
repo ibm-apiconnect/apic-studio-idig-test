@@ -66,14 +66,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Get IDIG Bearer token
+      - name: Obtain IDIG access token
         id: auth
+        env:
+          IDIG_USER: ${{ secrets.IDIG_USERNAME2 }}
+          IDIG_PASS: ${{ secrets.IDIG_PASSWORD2 }}
         run: |
-          # Use jq to build JSON body — avoids shell expansion of special
-          # characters (e.g. $ { }) that may appear in the password.
+          # Pass secrets via env vars so the shell never interpolates their
+          # values — jq reads them directly from the environment.
           LOGIN_BODY=$(jq -cn \
-            --arg u "${{ secrets.IDIG_USERNAME2 }}" \
-            --arg p "${{ secrets.IDIG_PASSWORD2 }}" \
+            --arg u "$IDIG_USER" \
+            --arg p "$IDIG_PASS" \
             '{username:$u,password:$p}')
           HEADERS=$(curl -k -s -o /dev/null -D - \
             https://${{ env.PLATFORM_IDIG_PREFIX }}.${{ env.IDIG_BROKER_HOST }}/api/v1/federated-login \
