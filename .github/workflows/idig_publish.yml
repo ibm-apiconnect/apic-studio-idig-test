@@ -11,6 +11,7 @@ on:
     branches:
       - main
       - master
+      - dc-test
       
 env: 
   IDIG_BROKER_HOST: apps.rosa.apic-d-v12e.bqrc.p3.openshiftapps.com
