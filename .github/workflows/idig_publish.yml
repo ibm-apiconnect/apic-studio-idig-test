@@ -69,10 +69,15 @@ jobs:
       - name: Fetch JWT via federated login
         id: auth
         run: |
-          TOKEN=$(curl -k -s -o /dev/null -D - \
+          # Capture full response headers for debugging
+          HEADERS=$(curl -k -s -o /dev/null -D - \
             https://${{ env.PLATFORM_IDIG_PREFIX }}.${{ env.IDIG_BROKER_HOST }}/api/v1/federated-login \
             -H 'Content-Type: application/json' \
-            -d "{\"username\":\"${{ secrets.IDIG_USERNAME }}\",\"password\":\"${{ secrets.IDIG_PASSWORD }}\"}" \
+            -d "{\"username\":\"${{ secrets.IDIG_USERNAME }}\",\"password\":\"${{ secrets.IDIG_PASSWORD }}\"}")
+          echo "--- response headers (cookie values redacted) ---"
+          echo "$HEADERS" | sed 's/accesstoken=eyJ[^;]*/accesstoken=<redacted>/g' | sed 's/refreshtoken=eyJ[^;]*/refreshtoken=<redacted>/g'
+          echo "--- end headers ---"
+          TOKEN=$(echo "$HEADERS" \
             | grep -i 'set-cookie:.*accesstoken=' \
             | sed 's/.*accesstoken=\(eyJ[^;]*\).*/\1/' \
             | tr -d '\r')
