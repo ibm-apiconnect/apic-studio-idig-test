@@ -1,0 +1,20 @@
+kind: MCPServer
+apiVersion: api.ibm.com/v1
+metadata:
+  name: test-external-project-2
+  namespace: test-project
+  version: "1.0"
+  tags: []
+  domain: mcp
+  labels:
+    origin: mcp-mcp
+spec:
+  title: test-external-server
+  protocolVersion: V2025_11_25
+  quota:
+    $ref: test-project:quota-project-2:1.0
+  policy-sequence:
+    - $ref: test-project:policy-sequence-project-2:1.0
+  capabilities:
+    tools:
+      - $ref: test-project:test-external-server-tool-project-2:1.0
