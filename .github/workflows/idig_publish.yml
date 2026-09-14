@@ -58,7 +58,6 @@ jobs:
     name: Publish changed folders and delete removed published assets
     runs-on: self-hosted
     needs: discover-changes
-    environment: dc
     steps:
       - uses: actions/checkout@v4
       - name: Set up Node.js
@@ -74,8 +73,8 @@ jobs:
           changed_files: ${{ needs.discover-changes.outputs.changed_files }}
           deleted_files_content: ${{ needs.discover-changes.outputs.deleted_files_content }}
           insecure_skip_tls_verify: 'true'
-          auth_username: ${{ secrets.IDIG_USERNAME }}
-          auth_password: ${{ secrets.IDIG_PASSWORD }}
+          auth_username: ${{ secrets.IDIG_USERNAME2 }}
+          auth_password: ${{ secrets.IDIG_PASSWORD2 }}
       - name: Display publish and delete action results
         env:
           ACTION_RESULT: ${{ steps.publish.outputs.action-result }}
