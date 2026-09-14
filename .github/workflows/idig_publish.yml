@@ -15,7 +15,7 @@ on:
       
 env: 
   IDIG_BROKER_HOST: apps.rosa.apic-d-v12e.bqrc.p3.openshiftapps.com
-  PLATFORM_IDIG_PREFIX: idig-broker
+  PLATFORM_IDIG_PREFIX: idig
 
 jobs:
   discover-changes:
