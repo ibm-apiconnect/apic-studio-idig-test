@@ -66,14 +66,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Fetch JWT via federated login
+      - name: Get IDIG Bearer token
         id: auth
         run: |
-          # Capture full response headers for debugging
+          # Use jq to build JSON body — avoids shell expansion of special
+          # characters (e.g. $ { }) that may appear in the password.
+          LOGIN_BODY=$(jq -cn \
+            --arg u "${{ secrets.IDIG_USERNAME2 }}" \
+            --arg p "${{ secrets.IDIG_PASSWORD2 }}" \
+            '{username:$u,password:$p}')
           HEADERS=$(curl -k -s -o /dev/null -D - \
             https://${{ env.PLATFORM_IDIG_PREFIX }}.${{ env.IDIG_BROKER_HOST }}/api/v1/federated-login \
             -H 'Content-Type: application/json' \
-            -d "{\"username\":\"${{ secrets.IDIG_USERNAME2 }}\",\"password\":\"${{ secrets.IDIG_PASSWORD2 }}\"}")
+            -d "$LOGIN_BODY")
           echo "--- response headers (cookie values redacted) ---"
           echo "$HEADERS" | sed 's/accesstoken=eyJ[^;]*/accesstoken=<redacted>/g' | sed 's/refreshtoken=eyJ[^;]*/refreshtoken=<redacted>/g'
           echo "--- end headers ---"
