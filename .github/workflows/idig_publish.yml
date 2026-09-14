@@ -2,6 +2,10 @@
 # GitHub Actions workflow — publish changed API Studio project folders and
 # delete published MCPServer/LLM assets for deleted project files whenever
 # changes are pushed to main or master.
+#
+# For OCP-hosted IDIG deployments that require JWT Bearer auth, this workflow
+# obtains a short-lived access token via /api/v1/federated-login before
+# calling the IDIG broker, instead of using Basic Auth directly.
 #---------------------------------------------------------------------------
 
 name: Publish API Studio changes to IDIG
@@ -11,9 +15,9 @@ on:
     branches:
       - main
       - master
-      - dc-test
-      
-env: 
+  workflow_dispatch:
+
+env:
   IDIG_BROKER_HOST: apps.rosa.apic-d-v12e.bqrc.p3.openshiftapps.com
   PLATFORM_IDIG_PREFIX: idig
 
@@ -60,23 +64,81 @@ jobs:
     needs: discover-changes
     steps:
       - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-      - name: Publish changed project folders and delete removed published assets
-        id: publish
-        uses: ibm-apiconnect/apic-studio-idig-action@main
-        with:
-          idig_host: ${{ env.IDIG_BROKER_HOST }}
-          platform_idig_prefix: ${{ env.PLATFORM_IDIG_PREFIX }}
-          changed_files: ${{ needs.discover-changes.outputs.changed_files }}
-          deleted_files_content: ${{ needs.discover-changes.outputs.deleted_files_content }}
-          insecure_skip_tls_verify: 'true'
-          auth_username: ${{ secrets.IDIG_USERNAME2 }}
-          auth_password: ${{ secrets.IDIG_PASSWORD2 }}
-      - name: Display publish and delete action results
-        env:
-          ACTION_RESULT: ${{ steps.publish.outputs.action-result }}
+
+      - name: Fetch JWT via federated login
+        id: auth
         run: |
-          echo "Result of the action: $ACTION_RESULT"
+          curl -k -s -o /dev/null \
+            -D /tmp/idig-login-headers.txt \
+            https://${{ env.PLATFORM_IDIG_PREFIX }}.${{ env.IDIG_BROKER_HOST }}/api/v1/federated-login \
+            -H 'Content-Type: application/json' \
+            -d "{\"username\":\"${{ secrets.IDIG_USERNAME }}\",\"password\":\"${{ secrets.IDIG_PASSWORD }}\"}"
+          TOKEN=$(grep -i 'set-cookie:.*accesstoken=' /tmp/idig-login-headers.txt | \
+            sed 's/.*accesstoken=\(eyJ[^;]*\).*/\1/' | tr -d '\r')
+          if [ -z "$TOKEN" ]; then
+            echo "ERROR: Failed to obtain access token from federated login"
+            exit 1
+          fi
+          echo "::add-mask::$TOKEN"
+          echo "idig_token=$TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Publish changed project folders
+        if: ${{ needs.discover-changes.outputs.changed_files != '' }}
+        run: |
+          FOLDERS=$(echo "${{ needs.discover-changes.outputs.changed_files }}" | \
+            tr ' ' '\n' | awk -F/ 'NF>1{print $1}' | sort -u)
+          if [ -z "$FOLDERS" ]; then
+            echo "No project folders to publish"
+            exit 0
+          fi
+          echo "Publishing folders: $FOLDERS"
+          zip -r studioProjectFiles.zip $FOLDERS
+          RESPONSE=$(curl -k -s \
+            -H "Authorization: Bearer ${{ steps.auth.outputs.idig_token }}" \
+            -H "Accept: application/json" \
+            -F "project=@studioProjectFiles.zip;type=application/zip" \
+            https://${{ env.PLATFORM_IDIG_PREFIX }}.${{ env.IDIG_BROKER_HOST }}/idig-broker/publish)
+          echo "Publish response: $RESPONSE"
+          STATUS=$(echo "$RESPONSE" | jq -r '.status // 0')
+          if [ "$STATUS" != "200" ] && [ "$STATUS" != "201" ] && [ "$STATUS" != "304" ]; then
+            echo "ERROR: Publish failed with status $STATUS"
+            exit 1
+          fi
+
+      - name: Delete removed published assets
+        if: ${{ needs.discover-changes.outputs.deleted_files_content != '[]' && needs.discover-changes.outputs.deleted_files_content != '' }}
+        env:
+          DELETED_FILES_CONTENT: ${{ needs.discover-changes.outputs.deleted_files_content }}
+        run: |
+          BODY=$(echo "$DELETED_FILES_CONTENT" | jq -c '
+            reduce .[] as $f (
+              {};
+              ($f.content | @base64d) as $yaml |
+              ($yaml | split("\n") | map(select(startswith("kind:"))) | .[0] | split(": ")[1] // "") as $kind |
+              ($yaml | split("\n") | map(select(startswith("  namespace:"))) | .[0] | ltrimstr("  namespace: ") | ltrimstr(" ")) as $ns |
+              ($yaml | split("\n") | map(select(startswith("  name:"))) | .[0] | ltrimstr("  name: ") | ltrimstr(" ")) as $name |
+              ($yaml | split("\n") | map(select(startswith("  version:"))) | .[0] | ltrimstr("  version: ") | ltrimstr(" ") | gsub("\""; "")) as $ver |
+              if ($kind == "MCPServer" or $kind == "LLM") and ($name != "") and ($ver != "") then
+                .[$ns] //= {"mcpServers":[],"llms":[]} |
+                if $kind == "MCPServer" then .[$ns].mcpServers += ["\($name):\($ver)"]
+                else .[$ns].llms += ["\($name):\($ver)"] end
+              else . end
+            )
+          ')
+          if [ "$BODY" = "{}" ] || [ -z "$BODY" ]; then
+            echo "No MCPServer or LLM assets to delete"
+            exit 0
+          fi
+          echo "Delete request body: $BODY"
+          RESPONSE=$(curl -k -s -X DELETE \
+            -H "Authorization: Bearer ${{ steps.auth.outputs.idig_token }}" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            -d "$BODY" \
+            https://${{ env.PLATFORM_IDIG_PREFIX }}.${{ env.IDIG_BROKER_HOST }}/idig-broker/published-assets)
+          echo "Delete response: $RESPONSE"
+          STATUS=$(echo "$RESPONSE" | jq -r '.status // 0')
+          if [ "$STATUS" != "200" ] && [ "$STATUS" != "201" ] && [ "$STATUS" != "304" ]; then
+            echo "ERROR: Delete failed with status $STATUS"
+            exit 1
+          fi
