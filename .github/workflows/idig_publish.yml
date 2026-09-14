@@ -13,13 +13,13 @@ on:
       - master
       
 env: 
-  IDIG_BROKER_HOST: t-us00.apiconnect.test.automation.ibm.com
+  IDIG_BROKER_HOST: apps.rosa.apic-d-v12e.bqrc.p3.openshiftapps.com
   PLATFORM_IDIG_PREFIX: idig-broker
 
 jobs:
   discover-changes:
     name: Discover changed files and deleted asset definitions
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     outputs:
       changed_files: ${{ steps.difference.outputs.changed_files }}
       deleted_files_content: ${{ steps.difference.outputs.deleted_files_content }}
@@ -55,7 +55,7 @@ jobs:
 
   publish-changes:
     name: Publish changed folders and delete removed published assets
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: discover-changes
     steps:
       - uses: actions/checkout@v4
