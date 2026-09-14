@@ -72,8 +72,7 @@ jobs:
           IDIG_USER: ${{ secrets.IDIG_USERNAME2 }}
           IDIG_PASS: ${{ secrets.IDIG_PASSWORD2 }}
         run: |
-          # Pass secrets via env vars so the shell never interpolates their
-          # values — jq reads them directly from the environment.
+          # Pass secrets via env vars so the shell never interpolates their values
           LOGIN_BODY=$(jq -cn \
             --arg u "$IDIG_USER" \
             --arg p "$IDIG_PASS" \
@@ -113,9 +112,14 @@ jobs:
             -F "project=@studioProjectFiles.zip;type=application/zip" \
             https://${{ env.PLATFORM_IDIG_PREFIX }}.${{ env.IDIG_BROKER_HOST }}/idig-broker/publish)
           echo "Publish response: $RESPONSE"
-          STATUS=$(echo "$RESPONSE" | jq -r '.status // 0')
-          if [ "$STATUS" != "200" ] && [ "$STATUS" != "201" ] && [ "$STATUS" != "304" ]; then
-            echo "ERROR: Publish failed with status $STATUS"
+          STATUS=$(echo "$RESPONSE" | jq -r '.status // empty')
+          TOTAL=$(echo "$RESPONSE" | jq -r '.total_results // empty')
+          if [ -n "$TOTAL" ]; then
+            echo "Publish successful (total_results: $TOTAL)"
+          elif [ "$STATUS" = "200" ] || [ "$STATUS" = "201" ] || [ "$STATUS" = "304" ]; then
+            echo "Publish successful (status: $STATUS)"
+          else
+            echo "ERROR: Publish failed — response: $RESPONSE"
             exit 1
           fi
 
