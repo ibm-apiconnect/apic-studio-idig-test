@@ -16,7 +16,7 @@ spec:
       serverUrl:
         plain:
           value: https://mcp.deepwiki.com/mcp
-      timeout: 30
+      timeout: 60
       tlsClientProfile: tls-client-profile-default:1.0.0
     primitive:
       tool:
