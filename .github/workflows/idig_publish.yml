@@ -67,7 +67,7 @@ jobs:
           node-version: '24'
       - name: Publish changed project folders and delete removed published assets
         id: publish
-        uses: ibm-apiconnect/apic-studio-idig-action@feat/additional-auth
+        uses: ibm-apiconnect/apic-studio-idig-action@additional-auth
         with:
           idig_host: ${{ env.IDIG_BROKER_HOST }}
           platform_idig_prefix: ${{ env.PLATFORM_IDIG_PREFIX }}
