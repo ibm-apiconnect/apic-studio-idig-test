@@ -61,6 +61,8 @@ jobs:
     needs: discover-changes
     steps:
       - uses: actions/checkout@v4
+      - name: Clear cached action to force re-fetch from branch
+        run: rm -rf /home/runner/_work/_actions/ibm-apiconnect/apic-studio-idig-action
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
