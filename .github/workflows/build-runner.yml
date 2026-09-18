@@ -7,7 +7,7 @@
 # The image is pushed to:
 #   ghcr.io/<org-or-user>/github-runner:latest
 #
-# No secrets need to be configured - GITHUB_TOKEN is used automatically.
+# No secrets need to be configured — GITHUB_TOKEN is used automatically.
 #---------------------------------------------------------------------------
 
 name: Build runner image
@@ -20,7 +20,7 @@ on:
       - master
       - dc-test
     paths:
-      - docs/runner/Containerfile
+      - .github/runner/Containerfile
 
 jobs:
   build:
@@ -43,7 +43,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: docs/runner
-          file: docs/runner/Containerfile
+          context: .github/runner
+          file: .github/runner/Containerfile
           push: true
           tags: ghcr.io/${{ github.repository_owner }}/github-runner:latest
