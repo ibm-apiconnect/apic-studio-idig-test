@@ -1,4 +1,4 @@
-FROM registry.redhat.io/ubi9/ubi:latest
+FROM docker.io/redhat/ubi9:latest
 
 ARG RUNNER_VERSION=2.322.0
 
