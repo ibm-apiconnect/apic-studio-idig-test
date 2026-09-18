@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 env:
-  IDIG_BROKER_HOST: fyre-ci-309793-master-1.dev.fyre.ibm.com
+  IDIG_BROKER_HOST: fyre-ci-309936-master-1.dev.fyre.ibm.com
   PLATFORM_IDIG_PREFIX: idig
 
 jobs:
